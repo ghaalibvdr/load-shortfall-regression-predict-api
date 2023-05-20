@@ -58,10 +58,58 @@ def _preprocess_data(data):
     # ---------------------------------------------------------------
 
     # ----------- Replace this code with your own preprocessing steps --------
-    predict_vector = feature_vector_df[['Madrid_wind_speed','Bilbao_rain_1h','Valencia_wind_speed']]
+
+    #predict_vector = feature_vector_df[['Madrid_wind_speed','Bilbao_rain_1h','Valencia_wind_speed']]
+    
+    predict_vector = feature_vector_df
+
+    df_test_time = pd.DataFrame(predict_vector['time'].copy(), columns=['time'])
+    
+    df_test_time['time'] = pd.to_datetime(df_test_time['time'])
+    
+    df_test_time['Day'] = df_test_time['time'].dt.day
+    df_test_time['Month'] = df_test_time['time'].dt.month
+    df_test_time['Year'] = df_test_time['time'].dt.year
+    df_test_time['Start_hour'] = df_test_time['time'].dt.hour
+    df_test_time['Start_Minute'] = df_test_time['time'].dt.minute
+    df_test_time['Start_second'] = df_test_time['time'].dt.second
+    df_test_time['Start_weekday'] = df_test_time['time'].dt.weekday
+    df_test_time['Start_week_of_year'] = df_test_time['time'].dt.isocalendar().week
+    
+    df_test_time = df_test_time.drop('time', axis=1)
+
+    df_test_clean = predict_vector.copy()
+
+    try:
+        df_test_clean['Valencia_pressure'] = df_test_clean['Valencia_pressure'].fillna(df_test_clean['Valencia_pressure'].mode()[0])
+    except Exception:
+        df_test_clean['Valencia_pressure'] = df_test_clean['Valencia_pressure'].fillna(0)
+    
+    #df_test_clean['Valencia_pressure'] = df_test_clean['Valencia_pressure'].fillna(df_test_clean['Valencia_pressure'].mode()[0])
+
+    df_test_clean['Valencia_wind_deg'] = df_test_clean['Valencia_wind_deg'].str.extract('(\d+)')
+    df_test_clean['Valencia_wind_deg'] = pd.to_numeric(df_test_clean['Valencia_wind_deg'])
+
+    df_test_clean['Seville_pressure'] = df_test_clean['Seville_pressure'].str.extract('(\d+)')
+    df_test_clean['Seville_pressure'] = pd.to_numeric(df_test_clean['Seville_pressure'])
+
+    df_test_clean = df_test_clean.drop(['Unnamed: 0','time'], axis=1)
+
+    df_test_new = pd.concat([df_test_time, df_test_clean], axis=1)
+
+    # Create a regex pattern to match column names containing 'min' or 'max'
+    pattern = r'(min|max)'
+
+    # Filter and remove columns based on the pattern
+    cols_to_remove = df_test_new.filter(regex=pattern, axis=1).columns
+    df_test_filtered = df_test_new.drop(cols_to_remove, axis=1)
+    print(df_test_filtered)
+    print(type(df_test_filtered))
+
     # ------------------------------------------------------------------------
 
-    return predict_vector
+    #return predict_vector
+    return df_test_filtered
 
 def load_model(path_to_model:str):
     """Adapter function to load our pretrained model into memory.
@@ -106,5 +154,6 @@ def make_prediction(data, model):
     prep_data = _preprocess_data(data)
     # Perform prediction with model and preprocessed data.
     prediction = model.predict(prep_data)
+    #print(prediction)
     # Format as list for output standardisation.
-    return prediction[0].tolist()
+    return prediction[0].flatten().tolist()
