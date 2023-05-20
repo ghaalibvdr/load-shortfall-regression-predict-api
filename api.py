@@ -30,7 +30,7 @@ app = Flask(__name__)
 # Load our model into memory.
 # Please update this path to reflect your own trained model.
 static_model = load_model(
-    path_to_model='assets/trained-models/load_shortfall_simple_lm_regression.pkl')
+    path_to_model='assets/trained-models/best_rf.pkl')
 
 print ('-'*40)
 print ('Model successfully loaded')
@@ -49,9 +49,11 @@ print ('-'*40)
 def model_prediction():
     # We retrieve the data payload of the POST request
     data = request.get_json(force=True)
+    print(data)
     # We then preprocess our data, and use our pretrained model to make a
     # prediction.
     output = make_prediction(data, static_model)
+    print(output)
     # We finally package this prediction as a JSON object to deliver a valid
     # response with our API.
     return jsonify(output)
