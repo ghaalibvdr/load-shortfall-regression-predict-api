@@ -59,6 +59,10 @@ def model_prediction():
     # response with our API.
     return jsonify(output)
 
+@app.route("/hello-api", methods=["GET"])
+def hello():
+    return "Hello World"
+
 # Configure Server Startup properties.
 # Note:
 # When developing your API, set `debug=True`
