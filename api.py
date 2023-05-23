@@ -54,7 +54,7 @@ def model_prediction():
     # prediction.
     output = make_prediction(data, static_model)
     print(output)
-    print("Hello Daniel")
+    #print("Hello Daniel")
     # We finally package this prediction as a JSON object to deliver a valid
     # response with our API.
     return jsonify(output)
