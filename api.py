@@ -49,19 +49,14 @@ print ('-'*40)
 def model_prediction():
     # We retrieve the data payload of the POST request
     data = request.get_json(force=True)
-    #print(data)
+    
     # We then preprocess our data, and use our pretrained model to make a
     # prediction.
     output = make_prediction(data, static_model)
-    #print(output)
-    #print("Hello Daniel")
+    
     # We finally package this prediction as a JSON object to deliver a valid
     # response with our API.
     return jsonify(output)
-
-@app.route("/hello-api", methods=["GET"])
-def hello():
-    return "Hello World"
 
 # Configure Server Startup properties.
 # Note:
