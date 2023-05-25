@@ -49,11 +49,11 @@ print ('-'*40)
 def model_prediction():
     # We retrieve the data payload of the POST request
     data = request.get_json(force=True)
-    print(data)
+    #print(data)
     # We then preprocess our data, and use our pretrained model to make a
     # prediction.
     output = make_prediction(data, static_model)
-    print(output)
+    #print(output)
     #print("Hello Daniel")
     # We finally package this prediction as a JSON object to deliver a valid
     # response with our API.
